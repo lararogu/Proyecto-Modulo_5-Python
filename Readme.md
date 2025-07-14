@@ -1,4 +1,4 @@
-# Título: Lógica Consultas de SQL  (Modulo 4)
+# Título: Lógica Katas Python  (Modulo 5)
 
 ## Descripción del Proyecto
 En este proyecto se han aplicado los conocimientos aprendidos en el módulo "Python".
