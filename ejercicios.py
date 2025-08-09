@@ -50,7 +50,7 @@ encontrar_palabra(lista_palabras, palabra)
 lista1=[1,4,5]
 lista2=[1,3,2]
 def diferencia(a, b):
-  return [item for item in a if item not in b]
+  return a-b
 
 list(map(diferencia, lista1,lista2))
 
@@ -90,8 +90,8 @@ def calcular_factorial(numero):
     else:
         return numero * calcular_factorial(numero - 1)
 #7. Genera una función que convierta una lista de tuplas a una lista de strings. Usa la función map()
-tuple=("a","b","c","d")      
-string=list(map(lambda tupla: str(tupla),tuple))
+lista_tuplas = [('Mi','lista'), ('fin','funcion')]     
+string=list(map(lambda tupla: ' '.join(tupla),lista_tuplas))
 print(string)
 #8. Escribe un programa que pida al usuario dos números e intente dividirlos. Si el usuario ingresa un valor no numérico
 #o intenta dividir por cero, maneja esas excepciones de manera adecuada. Asegúrate de mostrar un mensaje
@@ -117,9 +117,9 @@ else:
 #"Serpiente Pitón", "Cocodrilo", "Oso"].Usa la función filter()
 lista=["Perro", "Cocodrilo", "Tortuga"]
 
-def identificar_animal(lista):
+def identificar_animal(animal):
     lista_prohibida=["Mapache", "Tigre","Serpiente Pitón", "Cocodrilo", "Oso"]
-    return lista not in lista_prohibida
+    return animal not in lista_prohibida
 
 nueva_lista=list(filter(identificar_animal,lista))
 print(nueva_lista)
@@ -127,22 +127,21 @@ print(nueva_lista)
 #10. Escribe una función que reciba una lista de números y calcule su promedio. Si la lista está vacía, lanza una
 #excepción personalizada y maneja el error adecuadamente.
 lista=[1,5,4]
+class ListaVaciaError(Exception):
+    """Se lanza cuando la lista de entrada está vacía."""
+    pass
 
 def calcular_promedio(lista):
-    """
-    Suma todos los elementos de la lista y divide el total de la suma entre la longitud de la lista. Si la longitud de la lista es cero, salta una excepcion.
-    """
-    suma=0
-    try:
-        for i in lista:
-            suma+=i
-        media=suma/len(lista)
-        print(f"El promedio es:{media}")
-    except ZeroDivisionError:
-        print("No se puede calcular el promedio. La lista esta vacia")
+    if not lista:
+        raise ListaVaciaError("La lista está vacía, no se puede calcular promedio.")
+    return sum(lista) / len(lista)
 
-
-calcular_promedio(lista)
+# Uso
+try:
+    promedio = calcular_promedio(lista)
+    print(f"El promedio es:{promedio}")
+except ListaVaciaError as e:
+    print("Error:", e)
 
 #11. Escribe un programa que pida al usuario que introduzca su edad. Si el usuario ingresa un valor no numérico o un
 #valor fuera del rango esperado (por ejemplo, menor que 0 o mayor que 120), maneja las excepciones adecuadamente.
@@ -172,13 +171,13 @@ print (calcular_long_frase(frase))
 #mayúsculas y minúsculas. Las letras no pueden estar repetidas .Usa la función map()
 caracteres=['i','o','p']
 def devuelve_mayus_minus(caracteres):
-    caracteres2=[]
+    caracteres2=set()
     for i in caracteres:
-        caracteres2.append(i.upper())
-        caracteres2.append(i.lower())
-    return caracteres2
+        caracteres2.add((i.upper(),i.lower()))
+        
+    return list(caracteres2)
 
-print(tuple(map(devuelve_mayus_minus,caracteres)))
+print(devuelve_mayus_minus(caracteres))
 #14. Crea una función que retorne las palabras de una lista de palabras que comience con una letra en especifico. Usa la
 #función filter()
 palabras=["casa", "autobus","alfabeto", "oso"]
@@ -192,17 +191,14 @@ print(suma(lista))
 #16. Escribe una función que tome una cadena de texto y un número entero n como parámetros y devuelva una lista de
 #todas las palabras que sean más largas que n. Usa la función filter()
 texto="esto es una cadena de texto"
-n=7
+n=3
 
-def analizar_inicio_palabra (texto, n):
-    palabras = texto.split()
-    for i in palabras:
-        if len(i)>n:
-            return True
-        else:
-            return False
-    
-filter(analizar_inicio_palabra, texto, n)
+def analizar_inicio_palabra (lista):
+    return len(lista) > n
+
+palabras=texto.split()    
+print(list(filter(analizar_inicio_palabra, palabras)))
+
 #17. Crea una función que tome una lista de dígitos y devuelva el número correspondiente. Por ejemplo, [5,7,2]
 #corresponde al número quinientos setenta y dos (572). Usa la función reduce()
 from functools import reduce
@@ -213,20 +209,16 @@ reduce(lambda x,y:x*10 + y,digitos)
 #(nombre, edad, calificación) y use la función filter para extraer a los estudiantes con una calificación mayor o igual a
 #90. Usa la función filter()
 nombres=["Carlos", "Ana", "Maria", "Pepe"]
-edades=["19", "20", "19", "22"]
-calificaciones=["70", "55", "93", "66"]
-def crear_diccionario(nombres, edades, calificaciones):
-    lista_dic=[]
-    diccionario={}
-    for nombre,edad,nota in zip(nombres,edades,calificaciones):
-        diccionario.update({"nombre":nombre,"edad":edad,"calificacion":nota})
-        lista_dic.append(diccionario)
-    return lista_dic
+edades=[19, 20, 19, 22]
+calificaciones=[70, 55, 93, 66]
 
-mi_diccionario=crear_diccionario(nombres, edades, calificaciones)
-
-filter(list(lambda dic:True if dic["calificacion"] >90 else False, mi_diccionario))
-
+lista_dic = [
+    {"nombre": n, "edad": e, "calificacion": c}
+    for n, e, c in zip(nombres, edades, calificaciones)
+]
+    
+aprobados = list(filter(lambda dic:dic["calificacion"] > 90, lista_dic))
+print(aprobados)
 #19.Crea una función lambda que filtre los números impares de una lista dada.
 lista_numeros=[3, 8, 6, 5]
 print(list(filter(lambda x: True if x%2 !=0 else False, lista_numeros)))
@@ -245,13 +237,11 @@ reduce(lambda x,y:x*y, numeros)
 #23. Concatena una lista de palabras.Usa la función reduce()
 from functools import reduce
 
-def unir_iterables(valor):
-    str=""
-    str.join(valor)
-    return str
-
 lista=["Esto","es","un","curso","online"]
-lista_concatenada=reduce(unir_iterables,lista)
+lista_concatenada=reduce(lambda a, b: a + ' ' + b, lista)
+
+print(lista_concatenada)
+
 #24. Calcula la diferencia total en los valores de una lista. Usa la función reduce()
 from functools import reduce
 numeros=[3, 8, 6, 5]
@@ -262,7 +252,7 @@ def contar_longitud(texto):
     palabras = texto.split()
     longitud=0
     for i in palabras:
-        long+=len(i)
+        longitud+=len(i)
     return longitud
 
 contar_longitud(texto)
@@ -344,7 +334,7 @@ else:
 def buscar_empleado (nombre, lista):
     for i in lista:
         if i==nombre:
-            print("El puesto del empleado es",lista.index(i))
+            print(f"El puesto del empleado {nombre} es",lista.index(i))
             return lista.index(i)
         else:
             continue
@@ -367,20 +357,21 @@ suma = lambda lista1,lista2 : [a + b for a, b in zip(lista1, lista2)]
 class Arbol:
     def __init__(self, tronco):
         self.tronco=tronco
-        self.rama=[]
+        self.ramas=[]
     def crecer_tronco(self, unidades):
         self.tronco+=unidades
 
     def nueva_rama(self):
-       self.rama.insert(len(self.rama)-1, 1)
+       self.ramas.append(1)
 
     def crecer_ramas(self):
         for i in range(len(self.rama)):
-            self.rama[i]+=1
+            self.ramas[i]+=1
 
 
     def quitar_rama(self, posicion_rama):
-        self.rama.pop(posicion_rama)
+        if 0 <= posicion_rama < len(self.ramas):
+            self.ramas.pop(posicion_rama)
 
     def info_arbol(self):
         print (f"El arbol tiene los siguientes datos: Longitud tronco={self.tronco}, Numero Ramas={len(self.rama)}, Longitud ramas={self.rama}")
@@ -404,17 +395,18 @@ class UsuarioBanco:
         self.cuenta_corriente=cuenta_corriente
     def retirar_dinero(self, cantidad):
         if self.saldo<cantidad:
-            print("La cuenta no tiene suficiente saldo")
-            return ValueError
+            raise ValueError("Saldo insuficiente")
         else:
             self.saldo-=cantidad
 
     def transferir_dinero(self, cantidad, usuario_origen):
-       if usuario_origen.retirar_dinero(cantidad) ==ValueError:
-           print("No ha sido posible realizar la transferencia")
-       else:
+        try:
+            usuario_origen.retirar_dinero(cantidad)
+        except ValueError:
+            print("No ha sido posible realizar la transferencia")
+        else:
            self.saldo+=cantidad
-           usuario_origen.retirar_dinero(cantidad)
+           
 
     def agregar_dinero(self, cantidad):
        self.saldo+=cantidad
@@ -440,14 +432,11 @@ def contar_palabras(texto):
     return diccionario
 
 def reemplazar_palabras(texto, palabra_original, palabra_nueva):
-    texto.replace(palabra_original, palabra_nueva)
-    return texto
+    return texto.replace(palabra_original, palabra_nueva)
 
 def eliminar_palabras(texto, palabra_eliminar):
-    diccionario={}
     palabras = texto.split()
-    palabras.pop(palabras.index(palabra_eliminar))
-    return palabras
+    return ' '.join([p for p in palabras if p != palabra_eliminar])
 
 
 def procesar_texto(texto, funcion,*palabras):
@@ -514,7 +503,7 @@ def calcular_area (figura, datos):
         area=datos[0]*datos[1]
         return area
     elif figura=="triangulo":
-        area=datos[0]*datos[1]
+        area=datos[0]*datos[1]/2
         return area
     elif figura=="circulo":
         area=math.pi* datos[0]**2
